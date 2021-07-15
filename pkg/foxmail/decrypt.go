@@ -35,19 +35,19 @@ func DecryptPassword(strHash string, bVersion6 bool) (string, error) {
 	}
 
 	count := len(b)
-	d := make([]byte, count)
+	d := make([]int, count)
 	for i := 1; i < count; i++ {
-		d[i-1] = b[i] ^ a[i-1]
+		d[i-1] = int(b[i]) ^ int(a[i-1])
 	}
 
 	e := make([]byte, count)
 	for i := 0; i < count; i++ {
-		if int(d[i]-c[i]) < 0 {
-			e[i] = d[i] + 255 - c[i]
+		ec := int(c[i])
+		if d[i]-ec < 0 {
+			e[i] = byte(d[i] + 255 - ec)
 		} else {
-			e[i] = d[i] - c[i]
+			e[i] = byte(d[i] - ec)
 		}
-		//fmt.Println(e[i])
 	}
 	//最后一个字符去掉
 	return string(e[:count-1]), nil

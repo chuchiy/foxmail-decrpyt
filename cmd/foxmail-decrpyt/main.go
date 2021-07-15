@@ -10,9 +10,7 @@ import (
 
 func main() {
 
-	var bVersion6 bool
-
-	flag.BoolVar(&bVersion6, "v6", false, "password from foxmail 6")
+	v6 := flag.Bool("v6", false, "password from foxmail 6")
 	hexpwd := flag.String("p", "", "hex encrypt password")
 	flag.Parse()
 	if *hexpwd == "" {
@@ -20,7 +18,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	pwd, err := foxmail.DecryptPassword(*hexpwd, bVersion6)
+	pwd, err := foxmail.DecryptPassword(*hexpwd, *v6)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "hex pwd %s decrpyt error %s", *hexpwd, err)
 		os.Exit(1)

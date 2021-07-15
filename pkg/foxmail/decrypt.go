@@ -5,13 +5,11 @@ import (
 	"encoding/hex"
 )
 
-func DecryptPassword(strHash string, bVersion6 bool) (string, error) {
-	//var strPlainPassword []byte
+func DecryptPassword(encpwd string, v6 bool) (string, error) {
 	// 第一步：定义不同版本的秘钥
-	//vector<int> a(8), b, c;
 	var a []byte
 	var fc byte
-	if bVersion6 {
+	if v6 {
 		a = []byte{'~', 'd', 'r', 'a', 'G', 'o', 'n', '~'}
 		fc = 0x5A
 	} else {
@@ -20,7 +18,7 @@ func DecryptPassword(strHash string, bVersion6 bool) (string, error) {
 	}
 
 	// 第二步：以字节为单位将16进制密文转成10进制
-	b, err := hex.DecodeString(strHash)
+	b, err := hex.DecodeString(encpwd)
 	if err != nil {
 		return "", err
 	}
@@ -30,8 +28,12 @@ func DecryptPassword(strHash string, bVersion6 bool) (string, error) {
 	c[0] = c[0] ^ fc
 
 	// 第四步：不断扩容拷贝自身
-	for len(b) > len(a) {
-		a = bytes.Repeat(a, 2)
+	if len(b) > len(a) {
+		n := len(b) / len(a)
+		if len(b)%len(a) > 0 {
+			n += 1
+		}
+		a = bytes.Repeat(a, n)
 	}
 
 	count := len(b)
